@@ -94,7 +94,7 @@ def tests_from_changed_srcfiles(diff_dict, files):
     return test_set, changed_lines_dict, new_line_map_dict
 
 
-def run_tests_and_update_db(test_set, update_tuple, project_folder="."):
+def run_tests_and_update_db(update_tuple, pytest_params, project_folder="."):
     changed_lines_test = update_tuple[
         0
     ]  # TODO: `changed_lines_test` is not used below!
@@ -114,7 +114,7 @@ def run_tests_and_update_db(test_set, update_tuple, project_folder="."):
         delete_ran_lines(changed_lines_src[f], f)
         update_db_from_src_mapping(line_map_src[f], f)
 
-    subprocess.run(["tests_selector_run"] + list(test_set))
+    subprocess.run(["tests_selector_run"] + pytest_params)
 
 
 def split_changes(changed_files):

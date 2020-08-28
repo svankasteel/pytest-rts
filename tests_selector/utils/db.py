@@ -237,6 +237,7 @@ def init_mapping_db():
     c.execute("DROP TABLE IF EXISTS src_file")
     c.execute("DROP TABLE IF EXISTS test_file")
     c.execute("DROP TABLE IF EXISTS test_function")
+    c.execute("DROP TABLE IF EXISTS selected_tests")
     c.execute(
         "CREATE TABLE test_map (file_id INTEGER, test_function_id INTEGER, line_id INTEGER, UNIQUE(file_id,test_function_id,line_id))"
     )
@@ -257,6 +258,7 @@ def init_mapping_db():
                             FOREIGN KEY (test_file_id) REFERENCES test_file(id), 
                             UNIQUE (context))"""
     )
+    c.execute("CREATE TABLE selected_tests (name TEXT)")
     conn.commit()
     conn.close()
 
@@ -308,3 +310,20 @@ def get_test_duration(testname):
     ).fetchone()[0]
     conn.close()
     return duration
+
+
+def save_selected_tests(tests):
+    c, conn = get_cursor()
+    for t in tests:
+        c.execute("INSERT INTO selected_tests (name) VALUES (?)", (t,))
+    conn.commit()
+    conn.close()
+
+
+def get_selected_tests():
+    c, conn = get_cursor()
+    tests = [x[0] for x in c.execute("SELECT name FROM selected_tests").fetchall()]
+    c.execute("DELETE FROM selected_tests")
+    conn.commit()
+    conn.close()
+    return tests

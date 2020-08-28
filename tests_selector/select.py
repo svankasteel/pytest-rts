@@ -11,8 +11,9 @@ from tests_selector.utils.common import (
     DB_FILE_NAME,
 )
 from tests_selector.utils.git import changed_files_current
+from tests_selector.utils.db import save_selected_tests
 
-PYTEST_PARAM = sys.argv[1] if len(sys.argv) > 1 else ""
+PYTEST_PARAMS = sys.argv[1:] if len(sys.argv) > 1 else []
 
 
 def get_tests_from_current_changes(diff_dict_test, diff_dict_src, testfiles, srcfiles):
@@ -60,10 +61,9 @@ def main():
     print(f"found {len(final_test_set)} tests to execute")
 
     if len(final_test_set) > 0:
-        # run_tests_and_update_db(final_test_set, update_tuple,PROJECT_FOLDER)
-        # now the database is updated with new mapping but git diff still remains the same
-        # whats the best way to handle that?
-        subprocess.run(["tests_selector_run", PYTEST_PARAM] + list(final_test_set))
+        save_selected_tests(final_test_set)
+        # no shifting lines or removing selected lines
+        subprocess.run(["tests_selector_run"] + PYTEST_PARAMS)
 
 
 if __name__ == "__main__":
