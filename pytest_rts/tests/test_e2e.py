@@ -112,7 +112,10 @@ def test_skipping_commit(helper):
     helper.checkout_new_branch()
 
     # Change file from changes folder and commit changes
-    first_change, first_filename = ("changes/car/change_accelerate.txt", "src/car.py")
+    first_change, first_filename = (
+        "changes/car/change_accelerate.txt",
+        "src/car.py",
+    )
     helper.change_file(first_change, first_filename)
     helper.commit_change(first_filename, "commit1")
 
@@ -167,4 +170,29 @@ def test_squashing_commits(helper):
     assert helper.get_tests_from_tool_committed() == {
         "tests/test_shop.py::test_normal_shop_purchase",
         "tests/test_shop.py::test_normal_shop_purchase2",
+    }
+
+
+def test_init_code_tracked(helper):
+    helper.change_file("changes/init/change_function_one.txt", "src/__init__.py")
+    assert helper.get_tests_from_tool_current() == {"tests/test_init.py::test_one"}
+
+
+def test_decorated_tracked(helper):
+    """Test that changes in the decorator switch on the test using decorated
+    function.
+    """
+    helper.change_file("changes/decorated/change_decorator.txt", "src/decorators.py")
+    assert helper.get_tests_from_tool_current() == {
+        "tests/test_decorated.py::test_decorated"
+    }
+
+
+def test_decorated_with_param_tracked(helper):
+    """Test that changes in the parametrized decorator switch on the test using
+    decorated function.
+    """
+    helper.change_file("changes/decorated/change_decorator_2.txt", "src/decorators.py")
+    assert helper.get_tests_from_tool_current() == {
+        "tests/test_decorated.py::test_decorated_2"
     }
